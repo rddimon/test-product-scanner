@@ -1,9 +1,14 @@
 # test-product-scanner
-Installation:
+requirements:
+- python 3.x
+- npm (package manager)
 
-cd client-app
+Python commands:
+- pip install -r requirements.txt
+- python manage.py migrate
+- python manage.py runserver
 
-npm install
-
-npm build
+npm commands( before you need open client-app directory ):
+- npm install
+- npm build
 

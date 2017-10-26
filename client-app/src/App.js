@@ -201,11 +201,9 @@ class App extends Component {
                             Grant total:&nbsp;
                             ${(productSlide.selectedValue * crawlSlide.selectedValue + accountSlide.selectedValue).toFixed(2)}&nbsp;
                             / month
-                            <button className="btn">Cancel</button>
                             <button className="btn">Update</button>
+                            <button className="btn">Cancel</button>
                         </div>
-
-
                     </div>
                 </div>
             </div>
