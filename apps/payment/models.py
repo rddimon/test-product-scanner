@@ -4,7 +4,7 @@ from apps.account.models import User
 
 
 class NumberOfProducts(models.Model):
-    name = models.CharField("Plan name", max_length=200, default='')
+    name = models.CharField("Name", max_length=200, default='')
     price = models.DecimalField("Price", max_digits=6, decimal_places=2, default=0)
     order = models.IntegerField("Order", default=0)
 
@@ -19,7 +19,7 @@ class NumberOfProducts(models.Model):
 
 class CrawlsPerMonth(models.Model):
     name = models.CharField("Plan name", max_length=200, default='')
-    price = models.DecimalField("price", max_digits=6, decimal_places=2, default=0)
+    count = models.IntegerField("Count", default=0)
     order = models.IntegerField("Order", default=0)
 
     def __str__(self):

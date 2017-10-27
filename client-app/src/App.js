@@ -2,13 +2,21 @@ import React, {Component} from 'react';
 import Slider from 'react-rangeslider'
 import classNames from 'classnames';
 
+import axios from 'axios';
+
 import 'react-rangeslider/lib/index.css'
 import './App.css';
+
+const ApiUrl = "http://127.0.0.1:8000/api/";
 
 class App extends Component {
     constructor(props, context) {
         super(props, context);
+        this.CancelToken = axios.CancelToken;
+        this.source = this.CancelToken.source();
         this.state = {
+            isUpdating: false,
+            isValidating: false,
             productSlide: {
                 values: {
                     0: 0,
@@ -95,6 +103,7 @@ class App extends Component {
     };
 
     onHandlingSlideValueComplete = (_type) => {
+        let needValidate = false;
         switch (_type) {
             case 'account':
                 if (this.state.accountSlide.selectedValue !== this.state.accountSlide.values[this.state.accountSlide.value]) {
@@ -102,6 +111,7 @@ class App extends Component {
                     this.setState({
                         accountSlide: this.state.accountSlide
                     });
+                    needValidate = true;
                 }
                 break;
             case 'crawl':
@@ -110,6 +120,7 @@ class App extends Component {
                     this.setState({
                         crawlSlide: this.state.crawlSlide
                     });
+                    needValidate = true;
                 }
                 break;
             default:
@@ -118,12 +129,50 @@ class App extends Component {
                     this.setState({
                         productSlide: this.state.productSlide
                     });
+                    needValidate = true;
                 }
+        }
+        if (needValidate) {
+            this.validate();
         }
     };
 
+    updateHandling = () => {
+        if (this.state.isUpdating) {
+            return
+        }
+        this.setState({isUpdating: true});
+        axios.get(ApiUrl + "update", {
+            params: {
+                product: this.state.productSlide.selectedValue,
+                crawl: this.state.crawlSlide.selectedValue,
+                account: this.state.accountSlide.selectedValue
+            }
+
+        }).then(() => {
+            this.setState({isUpdating: false});
+        })
+    };
+
+    validate = () => {
+        if (this.state.isValidating) {
+            this.source.cancel();
+        }
+        this.setState({isValidating: true});
+        axios.get(ApiUrl + "validate", {
+            cancelToken: this.source.token,
+            params: {
+                product: this.state.productSlide.selectedValue,
+                crawl: this.state.crawlSlide.selectedValue,
+                account: this.state.accountSlide.selectedValue
+            }
+        }).then(() => {
+            this.setState({isValidating: false});
+        })
+    };
+
     render() {
-        const {productSlide, crawlSlide, accountSlide} = this.state;
+        const {productSlide, crawlSlide, accountSlide, isUpdating} = this.state;
         return (
             <div className="App">
                 <div className="App-intro">
@@ -201,7 +250,12 @@ class App extends Component {
                             Grant total:&nbsp;
                             ${(productSlide.selectedValue * crawlSlide.selectedValue + accountSlide.selectedValue).toFixed(2)}&nbsp;
                             / month
-                            <button className="btn">Update</button>
+                            <button
+                                className={classNames("btn", {'disabled': isUpdating})}
+                                disabled={isUpdating}
+                                onClick={this.updateHandling}>
+                                Update
+                            </button>
                             <button className="btn">Cancel</button>
                         </div>
                     </div>
