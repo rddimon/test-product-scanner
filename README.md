@@ -10,5 +10,5 @@ Python commands:
 
 npm commands( before you need open client-app directory ):
 - npm install
-- npm build
+- npm run build
 
